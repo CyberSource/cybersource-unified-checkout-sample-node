@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Capture Context</title>
+    <script>
+      if(window. self === window.top) {}
+      else {
+        var emptyDiv = document.createElement('div');
+        emptyDiv.innerHTML = "";
+        document.body.append(emptyDiv);
+      }
+    </script>
+</head>
+
+<body>
+<nav class="navbar navbar-expand-md navbar-dark sticky-top bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">Unified Checkout</a>
+    </div>
+</nav>
+
+<main role="main" class="container">
+    <div class="py-4 text-center">
+        <h2>Capture Context Request Success</h2>
+    </div>
+    <div class="py-2 text-left">
+        <p class="lead">
+            Your request returned the Capture Context encoded as JWT.
+            This JWT contains all of the information to start the Unified Checkout widget on your checkout page.
+            There is JavaScript URL, SRI hash and more, all cryptographically signed by Visa.
+        </p>
+    </div>
+    <form action="/checkout"
+          method="post">
+        <button class="btn btn-primary" type="submit">Launch checkout page</button>
+        <p/>
+        <div class="form-group">
+            <label for="ta1">Capture Context encoded as JWT (try decoding the JWT using a tool like
+                <a href="https://jwt.io/" target="_blank" rel="noopener noreferrer">jwt.io</a>, or see below)
+            </label>
+            <textarea class="form-control" id="ta1" name="captureContext" rows="15">
+                <%=captureConext%>
+            </textarea>
+            <br/>
+            <label for="ta2">Decoded capture context:</label>
+            <textarea class="form-control" id="ta2" name="captureContextDecoded" rows="20" >
+                <%=decodedData%>
+            </textarea>
+        </div>
+    </form>
+</main>
+</body>
+</html>
