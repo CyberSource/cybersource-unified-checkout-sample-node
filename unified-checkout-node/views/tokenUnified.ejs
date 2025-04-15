@@ -80,19 +80,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="card" >
-                        <div class="card-body">
-                            <h5 class="card-title">Perform 3DS</h5>
-                            <p class="card-text">Begin the payer authentication (3DS) journey by collecting device information.</p>
-                            <form action="/payer-authentication-setup"
-                                  method="post">
-                                <button class="btn btn-primary" type="submit" disabled>Use Transient Token to Perform 3DS</button>
-                                <input type="hidden" id="decodedData" name="decodedData" value= <%= decodedData %> >
-                            </form>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
      <% } %>
