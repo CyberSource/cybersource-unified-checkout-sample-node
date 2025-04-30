@@ -1,4 +1,4 @@
-# CyberSource Flex Samples (NodeJS)
+# CyberSource Unified checkout sample node
 
 This repository provides simple examples demonstrating usage of the Unified checkout and the drop-in UI flows.  For more details visit our Developer Guide at 
 
