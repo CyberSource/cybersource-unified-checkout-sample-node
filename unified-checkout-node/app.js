@@ -27,11 +27,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
-var usedDropInUI = false;
 
 app.get('/ucoverview', function (req, res) {
   try {
-    usedDropInUI = false;
     //can make configuration changes in the json file or via the UI
     const filePath = path.join(__dirname, './Data/default-uc-capture-context-request.json');
     const fileContent = fs.readFileSync(filePath, "utf-8");
@@ -41,17 +39,6 @@ app.get('/ucoverview', function (req, res) {
   }
 });
 
-app.get('/ctp-drop-in-ui-overview', function (req, res) {
-    try {
-      usedDropInUI = true;
-      //can make configuration changes in the json file or via the UI
-      const filePath = path.join(__dirname, './Data/default-ctp-drop-in-ui-capture-context-request.json');
-      const fileContent = fs.readFileSync(filePath, "utf-8");
-      res.render('ctp-drop-in-ui-overview', {jsonRequest: fileContent});               
-    } catch (error) {
-        res.send('Error : ' + error + ' Error status code : ' + error.statusCode);
-    }
-});
 
 app.post('/capture-context', function (req, res) {
   try {
@@ -93,7 +80,7 @@ app.post('/completePaymentResponse', function (req, res) {
   try {
     const response = req.body.response.split('.')[1];
     const decodedData =  JSON.parse(Buffer.from(response, 'base64').toString());
-    res.render('completeResponse', { response:  req.body.response, decodedData: JSON.stringify(decodedData), usedDropInUI: usedDropInUI} );                
+    res.render('completeResponse', { response:  req.body.response, decodedData: JSON.stringify(decodedData)} );                
   } catch (error) {
       res.send('Error : ' + error + ' Error status code : ' + error.statusCode);
   }  
