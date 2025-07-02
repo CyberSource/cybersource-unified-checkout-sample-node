@@ -188,16 +188,6 @@
                     <hr/>
                     <h4>Order Total<span class="pull-right">$ 21.00</span></h4>
                     <hr/>
-                    <div th:if="${usedDropInUI}">
-                        <div class="alert alert-danger" role="alert">
-                            <h4 class="alert-heading">Caution!</h4>
-                            <hr>
-                            This payment flow will return raw payment credentials at the end! Do not enter a real card number
-                            below, instead use 4111 1111 1111 1111 or
-                            <a class="alert-link" href="https://developer.cybersource.com/hello-world/testing-guide-v1.html" target="_blank" rel="noopener noreferrer">another test card</a>.
-                            If you meant to use Unified Checkout (on Cybersource or the Visa Acceptance Gateway), <a href="/uc-overview" class="alert-link">go there</a>.
-                        </div>
-                    </div>
                     <div id="buttonPaymentListContainer">
                         <button type="button" id="checkoutEmbedded" class="btn btn-lg btn-block btn-primary"
                                 disabled="disabled">
@@ -213,8 +203,8 @@
         </div>
     </div>
 </div>
-<form id="authForm" action="/tokenUnified" method="post">
-    <input type="hidden" id="transientToken" name="transientToken"/>
+<form id="authForm" action="/completePaymentResponse" method="post">
+    <input type="hidden" id="response" name="response"/>
 </form>
 <input type="hidden" id="captureContext" value= <%= captureContext %> />
 
@@ -243,26 +233,28 @@
   document.head.appendChild(script);
 
   async function flexSetup() {
-  const authForm = document.getElementById("authForm");
-    const transientToken = document.getElementById("transientToken");
+    const authForm = document.getElementById("authForm");
+    const response = document.getElementById("response");
     const cc = document.getElementById("captureContext").value;
     const showArgs = {
-    containers: {
-      paymentSelection: "#buttonPaymentListContainer"
+      containers: {
+        paymentSelection: "#buttonPaymentListContainer"
+      }
+    };
+    const sidebar = true;
+    try {
+      const accept = await Accept(cc);
+      const up = await accept.unifiedPayments(sidebar);
+      const tt = await up.show(showArgs);
+      const completeResponse = await up.complete(tt);
+      response.value = completeResponse;
+      authForm.submit();
+      console.log(completeResponse); 
+    } 
+    catch (error) {
+      console.error("something went wrong: " + error);
     }
     };
-    Accept(cc)
-    .then(function(accept) {
-      return accept.unifiedPayments();
-    })
-    .then(function(up) {
-      return up.show(showArgs);
-    })
-    .then(function(tt) {
-      transientToken.value = tt;
-      authForm.submit();
-    });
-  }
 </script>
 </body>
 </html>
