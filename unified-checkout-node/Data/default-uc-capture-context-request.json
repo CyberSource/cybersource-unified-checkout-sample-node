@@ -1,6 +1,6 @@
 {
     "targetOrigins" : [ "https://localhost:3000" ],
-    "clientVersion" : "0.19",
+    "clientVersion" : "0.26",
     "allowedCardNetworks" : [ "VISA", "MASTERCARD", "AMEX", "DISCOVER", "JCB", "DINERSCLUB"],
     "allowedPaymentTypes" : ["CLICKTOPAY", "GOOGLEPAY"],
     "country" : "US",
@@ -12,6 +12,10 @@
         "requestShipping" : true,
         "shipToCountries" : [ "US", "GB" ],
         "showAcceptedNetworkIcons" : true
+    },
+    "completeMandate": {
+        "type": "AUTH",
+        "decisionManager": true
     },
     "orderInformation" : {
         "amountDetails" : {
