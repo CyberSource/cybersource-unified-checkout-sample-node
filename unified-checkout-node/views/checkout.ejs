@@ -209,8 +209,8 @@
 <input type="hidden" id="captureContext" value= <%= captureContext %> />
 
 <script>
-  var clientLibrary = <%-url%> ;
-  var clientLibraryIntegrity = <%-clientLibraryIntegrity%>;
+  const clientLibrary = <%-url%> ;
+  const clientLibraryIntegrity = <%-clientLibraryIntegrity%>;
 
   const script = document.createElement('script');
   script.type = 'text/javascript';
@@ -226,10 +226,9 @@
   //url extracted from the JWT
   script.src = clientLibrary;
   //integrity extracted from the JWT
-  if (clientLibraryIntegrity) {
-      script.integrity = clientLibraryIntegrity;
-      script.crossOrigin = "anonymous";
-  }
+  script.integrity = clientLibraryIntegrity;
+  script.crossOrigin = "anonymous";
+
   document.head.appendChild(script);
 
   async function flexSetup() {
