@@ -15,7 +15,6 @@
         }
     </style>
 </head>
-
 <body>
 <nav class="navbar navbar-expand-md navbar-dark sticky-top bg-dark">
     <div class="container-fluid">
@@ -36,11 +35,15 @@
         <button type="submit" class="btn btn-primary">Start Checkout Process Over</button>
         <p></p>
     </form>
-    <div class="form-group">
-        <label for="ta1">Payment response:</label>
-        <textarea class="form-control" id="ta1" name="captureContextRequest" rows="20">
-            <%=paymentResponse%>
-        </textarea>
-    </div>
+    <form>
+        <div class="form-group">
+            <label for="ta1">JWT-encoded complete response:</label>
+            <textarea class="form-control" id="response" rows="10"><%=response%></textarea>
+            <br/>
+            <label for="ta2">Decoded complete response:</label>
+            <textarea class="form-control" id="ta2" rows="20"><%=decodedData%></textarea>
+        </div>
+    </form>
 </main>
 </body>
+</html>
