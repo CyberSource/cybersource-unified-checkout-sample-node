@@ -13,7 +13,9 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "generate-ssl": "bash scripts/generate-ssl.sh"
+    "generate-ssl": "node scripts/generate-ssl.js",
+    "generate-ssl:bash": "bash scripts/generate-ssl.sh",
+    "generate-ssl:powershell": "powershell -ExecutionPolicy Bypass -File scripts/generate-ssl.ps1"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.0",

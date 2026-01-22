@@ -2,6 +2,8 @@
 
 Запустите CyberSource Unified Checkout на NestJS за 5 минут!
 
+> 🪟 **Windows пользователи**: Для детальных инструкций см. [WINDOWS-SETUP.md](WINDOWS-SETUP.md)
+
 ## Шаг 1: Установка зависимостей
 
 ```bash
@@ -19,8 +21,14 @@ npm run generate-ssl
 
 Создайте файл `.env`:
 
+**Linux/Mac:**
 ```bash
 cp .env.example .env
+```
+
+**Windows (PowerShell/CMD):**
+```powershell
+copy .env.example .env
 ```
 
 Отредактируйте `.env` и добавьте ваши CyberSource ключи:
