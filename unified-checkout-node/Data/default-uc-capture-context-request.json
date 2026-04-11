@@ -2,7 +2,7 @@
     "targetOrigins" : [ "https://localhost:3000" ],
     "clientVersion" : "0.26",
     "allowedCardNetworks" : [ "VISA", "MASTERCARD", "AMEX", "DISCOVER", "JCB", "DINERSCLUB"],
-    "allowedPaymentTypes" : ["CLICKTOPAY", "GOOGLEPAY"],
+    "allowedPaymentTypes" : ["PANENTRY"],
     "country" : "US",
     "locale" : "en_US",
     "captureMandate" : {
