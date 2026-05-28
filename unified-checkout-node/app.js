@@ -3,6 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const csrf = require('csurf');
 
 const fs = require('fs');
 
@@ -11,6 +12,8 @@ const usersRouter = require('./routes/users');
 
 const cybersourceRestApi = require('cybersource-rest-client');
 const configuration = require('./Data/Configuration');
+const { validateRequest } = require('./validation/RequestValidator');
+const { extractClientLibraryFromToken, extractResponseData } = require('./validation/TokenValidator');
 
 const app = express();
 
@@ -24,6 +27,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// CSRF protection middleware
+const csrfProtection = csrf({ cookie: true });
+app.use(csrfProtection);
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
@@ -33,19 +40,34 @@ app.get('/ucoverview', function (req, res) {
     //can make configuration changes in the json file or via the UI
     const filePath = path.join(__dirname, './Data/default-uc-capture-context-request.json');
     const fileContent = fs.readFileSync(filePath, "utf-8");
-    res.render('uc-overview', {jsonRequest: fileContent});               
+    res.render('uc-overview', {jsonRequest: fileContent, csrfToken: req.csrfToken()});
   } catch (error) {
-      res.send('Error : ' + error + ' Error status code : ' + error.statusCode);
+      console.error('\nUC Overview Error : ' + error);
+      res.status(500).render('error', { 
+        message: 'An error occurred loading the overview page',
+        error: { status: 500, stack: '' }
+      });
   }
 });
 
 
 app.post('/capture-context', function (req, res) {
   try {
+    // Validate and sanitize request against allowlist
+    let requestObj;
+    try {
+      requestObj = validateRequest(req.body.captureContextRequest);
+    } catch (validationError) {
+      console.error('\nValidation Error : ' + validationError.message);
+      return res.status(400).render('error', { 
+        message: 'Invalid request. Please check your input and try again.',
+        error: { status: 400, stack: '' }
+      });
+    }
+
     // add your merchant id and keys in the ./Data/Configuration 
     const configObject = new configuration();
     const apiClient = new cybersourceRestApi.ApiClient();
-    const requestObj = JSON.parse(req.body.captureContextRequest);
     const instance = new cybersourceRestApi.UnifiedCheckoutCaptureContextApi(configObject, apiClient);
 
     instance.generateUnifiedCheckoutCaptureContext(requestObj, function (error, data, response) {
@@ -54,7 +76,7 @@ app.post('/capture-context', function (req, res) {
       }
       else if (data) {
         const decodedData =  JSON.parse(Buffer.from(data.split('.')[1], 'base64').toString());
-        res.render('capture-context', {captureConext: data, decodedData: JSON.stringify(decodedData)});
+        res.render('capture-context', {captureContext: data, decodedData: JSON.stringify(decodedData), csrfToken: req.csrfToken()});
       }
     });
 	}
@@ -65,26 +87,84 @@ app.post('/capture-context', function (req, res) {
 
 app.post('/checkout', function (req, res) {
   try {
-    const decodeData = JSON.parse(req.body.captureContextDecoded);
     const captureContext = req.body.captureContext;
-    //extract the client library URL and the integrity to load the SDK
-    const url = decodeData.ctx[0].data.clientLibrary;
-    const clientLibraryIntegrity = decodeData.ctx[0].data.clientLibraryIntegrity
-    res.render('checkout', {url: JSON.stringify(url), clientLibraryIntegrity: JSON.stringify(clientLibraryIntegrity), captureContext: captureContext});
+    
+    if (!captureContext || typeof captureContext !== 'string') {
+      return res.status(400).render('error', { 
+        message: 'Invalid request: captureContext token is required',
+        error: { status: 400, stack: '' }
+      });
+    }
+
+    // Verify and decode the token server-side (do NOT trust client-side decoded data)
+    let libraryInfo;
+    try {
+      libraryInfo = extractClientLibraryFromToken(captureContext);
+    } catch (tokenError) {
+      console.error('\nToken Verification Error : ' + tokenError.message);
+      return res.status(400).render('error', { 
+        message: 'Invalid or expired capture context token. Please request a new token.',
+        error: { status: 400, stack: '' }
+      });
+    }
+
+    const url = libraryInfo.clientLibrary;
+    const clientLibraryIntegrity = libraryInfo.clientLibraryIntegrity;
+    res.render('checkout', {url: JSON.stringify(url), clientLibraryIntegrity: JSON.stringify(clientLibraryIntegrity), captureContext: captureContext, csrfToken: req.csrfToken()});
   } catch(error) {
-      res.send('Error : ' + error + ' Error status code : ' + error.statusCode);
+      console.error('\nCheckout Error : ' + error);
+      res.status(500).render('error', { 
+        message: 'An error occurred during checkout preparation',
+        error: { status: 500, stack: '' }
+      });
   }
 });
 
 app.post('/completePaymentResponse', function (req, res) {
   try {
-    const response = req.body.response.split('.')[1];
-    const decodedData =  JSON.parse(Buffer.from(response, 'base64').toString());
-    res.render('completeResponse', { response:  req.body.response, decodedData: JSON.stringify(decodedData)} );                
+    const responseToken = req.body.response;
+    
+    if (!responseToken || typeof responseToken !== 'string') {
+      return res.status(400).render('error', { 
+        message: 'Invalid request: response token is required',
+        error: { status: 400, stack: '' }
+      });
+    }
+
+    // Verify and decode the response token server-side
+    let decodedData;
+    try {
+      decodedData = extractResponseData(responseToken);
+    } catch (tokenError) {
+      console.error('\nResponse Token Verification Error : ' + tokenError.message);
+      return res.status(400).render('error', { 
+        message: 'Invalid or tampered response token. Payment processing cannot continue.',
+        error: { status: 400, stack: '' }
+      });
+    }
+
+    res.render('completeResponse', { response: responseToken, decodedData: JSON.stringify(decodedData) });
   } catch (error) {
-      res.send('Error : ' + error + ' Error status code : ' + error.statusCode);
-  }  
-});  
+      console.error('\nComplete Payment Response Error : ' + error);
+      res.status(500).render('error', { 
+        message: 'An error occurred processing the payment response',
+        error: { status: 500, stack: '' }
+      });
+  }
+});
+
+// CSRF error handler - must come before other error handlers
+app.use(function(err, req, res, next) {
+  if (err.code === 'EBADCSRFTOKEN') {
+    console.error('CSRF validation failed: ' + err.message);
+    return res.status(403).render('error', {
+      message: 'Session expired or invalid. Please reload and try again.',
+      error: { status: 403, stack: '' }
+    });
+  }
+  // Pass other errors to next handler
+  next(err);
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

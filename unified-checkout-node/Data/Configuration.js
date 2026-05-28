@@ -17,7 +17,7 @@ const RunEnvironment = 'apitest.cybersource.com';
 // const MerchantSecretKey = YOUR MERCHANT SECRET;
 
 // jwt parameters
-const KeysDirectory = 'Resource';
+// const KeysDirectory = 'Resource';
 // const KeyFileName = YOUR MERCHANT ID;
 // const KeyAlias = YOUR MERCHANT ID;
 // const KeyPass =  YOUR MERCHANT ID;
@@ -53,10 +53,10 @@ function Configuration() {
         'merchantKeyId': MerchantKeyId,
         'merchantsecretKey': MerchantSecretKey,
 
-        'keyAlias': KeyAlias,
-        'keyPass': KeyPass,
-        'keyFileName': KeyFileName,
-        'keysDirectory': KeysDirectory,
+        // 'keyAlias': KeyAlias,
+        // 'keyPass': KeyPass,
+        // 'keyFileName': KeyFileName,
+        // 'keysDirectory': KeysDirectory,
 
         'useMetaKey': UseMetaKey,
         'portfolioID': PortfolioID,

@@ -37,6 +37,7 @@
     </div>
     <form action="/checkout"
           method="post">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <button class="btn btn-primary" type="submit">Launch checkout page</button>
         <p/>
         <div class="form-group">
@@ -44,7 +45,7 @@
                 <a href="https://jwt.io/" target="_blank" rel="noopener noreferrer">jwt.io</a>, or see below)
             </label>
             <textarea class="form-control" id="ta1" name="captureContext" rows="15">
-                <%=captureConext%>
+                <%=captureContext%>
             </textarea>
             <br/>
             <label for="ta2">Decoded capture context:</label>

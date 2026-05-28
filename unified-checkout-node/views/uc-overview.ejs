@@ -39,6 +39,7 @@
 
     <form action="/capture-context"
           method="post">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
         <button type="submit" class="btn btn-primary">Generate Capture Context</button>
         <p/>
         <div class="form-group">
