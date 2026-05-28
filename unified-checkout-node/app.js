@@ -85,7 +85,7 @@ app.post('/capture-context', function (req, res) {
 	}
 });
 
-app.post('/checkout', function (req, res) {
+app.post('/checkout', async function (req, res) {
   try {
     const captureContext = req.body.captureContext;
     
@@ -99,7 +99,7 @@ app.post('/checkout', function (req, res) {
     // Verify and decode the token server-side (do NOT trust client-side decoded data)
     let libraryInfo;
     try {
-      libraryInfo = extractClientLibraryFromToken(captureContext);
+      libraryInfo = await extractClientLibraryFromToken(captureContext);
     } catch (tokenError) {
       console.error('\nToken Verification Error : ' + tokenError.message);
       return res.status(400).render('error', { 
@@ -120,7 +120,7 @@ app.post('/checkout', function (req, res) {
   }
 });
 
-app.post('/completePaymentResponse', function (req, res) {
+app.post('/completePaymentResponse', async function (req, res) {
   try {
     const responseToken = req.body.response;
     
@@ -134,7 +134,7 @@ app.post('/completePaymentResponse', function (req, res) {
     // Verify and decode the response token server-side
     let decodedData;
     try {
-      decodedData = extractResponseData(responseToken);
+      decodedData = await extractResponseData(responseToken);
     } catch (tokenError) {
       console.error('\nResponse Token Verification Error : ' + tokenError.message);
       return res.status(400).render('error', { 
