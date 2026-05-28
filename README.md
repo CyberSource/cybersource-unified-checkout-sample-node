@@ -14,10 +14,11 @@ This repository provides simple examples demonstrating usage of the Unified chec
       openssl req -x509 -newkey rsa:2048 -nodes -keyout server.key -out server.cert -days 365
    ```
 4. Place these files in the bin directory
-5. Update json/js configuration files in the Data folder with your [CyberSource sandbox credentials](https://ebc2test.cybersource.com). 
-6. Run ```npm install``` in the sample 
-7. Run ```npm start```.
-8. Browse to https://localhost:3000 in your browser
+5. Update json/js configuration files in the Data folder with your [CyberSource sandbox credentials](https://ebc2test.cybersource.com).
+6. **[ Optional ]** Fetch a network tokenization private key from EBC2 for your merchant account and put the path in `unified-checkout-node\Data\Configuration.js` in the property `PemFileDirectory`.
+7. Run ```npm install``` in the sample 
+8. Run ```npm start```.
+9. Browse to https://localhost:3000 in your browser
 
 ## Requirements
 

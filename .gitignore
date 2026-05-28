@@ -134,3 +134,9 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Locally-generated key material and certificates
+*.key
+*.cert
+*.pem
+unified-checkout-node/bin/server.*
