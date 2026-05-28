@@ -9,10 +9,15 @@ This repository provides simple examples demonstrating usage of the Unified chec
 
 1. Clone or download this repository.
 2. cd into unified-checkout-node directory
-3. Update json/js configuration files in the Data folder with your [CyberSource sandbox credentials](https://ebc2test.cybersource.com). 
-4. Run ```npm install``` in the sample 
-5. Run ```npm start```.
-6. Browse to https://localhost:3000 in your browser
+3. Generate a certificate and private key locally using the command
+   ```bash
+      openssl req -x509 -newkey rsa:2048 -nodes -keyout server.key -out server.cert -days 365
+   ```
+4. Place these files in the bin directory
+5. Update json/js configuration files in the Data folder with your [CyberSource sandbox credentials](https://ebc2test.cybersource.com). 
+6. Run ```npm install``` in the sample 
+7. Run ```npm start```.
+8. Browse to https://localhost:3000 in your browser
 
 ## Requirements
 

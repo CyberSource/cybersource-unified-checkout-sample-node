@@ -205,8 +205,9 @@
 </div>
 <form id="authForm" action="/completePaymentResponse" method="post">
     <input type="hidden" id="response" name="response"/>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
 </form>
-<input type="hidden" id="captureContext" value= <%= captureContext %> />
+<input type="hidden" id="captureContext" value="<%= captureContext %>" />
 
 <script>
   const clientLibrary = <%-url%> ;
@@ -234,7 +235,7 @@
   async function flexSetup() {
     const authForm = document.getElementById("authForm");
     const response = document.getElementById("response");
-    const cc = document.getElementById("captureContext").value;
+    const cc = document.getElementById("captureContext").value.trim();
     const showArgs = {
       containers: {
         paymentSelection: "#buttonPaymentListContainer"
@@ -251,7 +252,7 @@
       console.log(completeResponse); 
     } 
     catch (error) {
-      console.error("something went wrong: " + error);
+      console.error("Something went wrong!\nError Message:", error.message);
     }
     };
 </script>
