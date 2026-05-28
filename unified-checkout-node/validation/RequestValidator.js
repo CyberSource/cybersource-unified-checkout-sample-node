@@ -58,6 +58,7 @@ const SCHEMA = {
   completeMandate: {
     type: 'object',
     required: false,
+    model: 'Upv1capturecontextsCompleteMandate',
     description: 'Complete mandate configuration'
   },
   orderInformation: {
@@ -69,6 +70,7 @@ const SCHEMA = {
   transientTokenResponseOptions: {
     type: 'object',
     required: false,
+    model: 'Microformv2sessionsTransientTokenResponseOptions',
     description: 'Transient token response options'
   }
 };
@@ -107,9 +109,9 @@ function validateTargetOrigins(targetOrigins) {
     if (typeof origin !== 'string') {
       throw new Error('Each targetOrigin must be a string');
     }
-    // Basic URL validation - must contain protocol and domain
-    if (!/^https?:\/\/.+/.test(origin)) {
-      throw new Error(`Invalid targetOrigin format: ${origin}. Must start with http:// or https://`);
+    // Basic URL validation - must use HTTPS protocol
+    if (!/^https:\/\/.+/.test(origin)) {
+      throw new Error(`Invalid targetOrigin format: ${origin}. Must start with https://`);
     }
   }
 }
@@ -271,6 +273,74 @@ function validateOrderInformation(orderInfoData) {
 }
 
 /**
+ * Validates completeMandate using the CyberSource model
+ */
+function validateCompleteMandate(mandateData) {
+  if (!mandateData) return;
+
+  try {
+    // Use the CyberSource model to validate structure
+    const mandateModel = cybersourceRestApi.Upv1capturecontextsCompleteMandate;
+    mandateModel.constructFromObject(mandateData);
+  } catch (error) {
+    throw new Error(`Invalid completeMandate: ${error.message}`);
+  }
+
+  // Restrict to known fields
+  const allowedFields = ['type', 'decisionManager', 'billPayment'];
+  for (const field of Object.keys(mandateData)) {
+    if (!allowedFields.includes(field)) {
+      throw new Error(`Unexpected field in completeMandate: ${field}`);
+    }
+  }
+
+  // Validate type enum
+  if (mandateData.type !== undefined) {
+    const validTypes = ['AUTH', 'CAPTURE'];
+    if (typeof mandateData.type !== 'string' || !validTypes.includes(mandateData.type)) {
+      throw new Error(`Invalid completeMandate.type: ${mandateData.type}. Must be one of: ${validTypes.join(', ')}`);
+    }
+  }
+
+  // Validate boolean fields
+  if (mandateData.decisionManager !== undefined && typeof mandateData.decisionManager !== 'boolean') {
+    throw new Error('completeMandate.decisionManager must be a boolean');
+  }
+
+  if (mandateData.billPayment !== undefined && typeof mandateData.billPayment !== 'boolean') {
+    throw new Error('completeMandate.billPayment must be a boolean');
+  }
+}
+
+/**
+ * Validates transientTokenResponseOptions using the CyberSource model
+ */
+function validateTransientTokenResponseOptions(optionsData) {
+  if (!optionsData) return;
+
+  try {
+    // Use the CyberSource model to validate structure
+    const optionsModel = cybersourceRestApi.Microformv2sessionsTransientTokenResponseOptions;
+    optionsModel.constructFromObject(optionsData);
+  } catch (error) {
+    throw new Error(`Invalid transientTokenResponseOptions: ${error.message}`);
+  }
+
+  // Restrict to known fields
+  const allowedFields = ['includeCardPrefix'];
+  for (const field of Object.keys(optionsData)) {
+    if (!allowedFields.includes(field)) {
+      throw new Error(`Unexpected field in transientTokenResponseOptions: ${field}`);
+    }
+  }
+
+  // Validate boolean fields
+  if (optionsData.includeCardPrefix !== undefined && typeof optionsData.includeCardPrefix !== 'boolean') {
+    throw new Error('transientTokenResponseOptions.includeCardPrefix must be a boolean');
+  }
+}
+
+/**
  * Validates address object (billTo or shipTo)
  */
 function validateAddressObject(addressData, objectName) {
@@ -386,8 +456,14 @@ function validateRequest(requestBody) {
       case 'captureMandate':
         validateCaptureMandate(value);
         break;
+      case 'completeMandate':
+        validateCompleteMandate(value);
+        break;
       case 'orderInformation':
         validateOrderInformation(value);
+        break;
+      case 'transientTokenResponseOptions':
+        validateTransientTokenResponseOptions(value);
         break;
     }
   }
