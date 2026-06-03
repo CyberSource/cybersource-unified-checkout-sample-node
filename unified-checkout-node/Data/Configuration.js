@@ -17,7 +17,7 @@ const RunEnvironment = 'apitest.cybersource.com';
 // const MerchantSecretKey = YOUR MERCHANT SECRET;
 
 // jwt parameters
-const KeysDirectory = 'Resource';
+// const KeysDirectory = 'Resource';
 // const KeyFileName = YOUR MERCHANT ID;
 // const KeyAlias = YOUR MERCHANT ID;
 // const KeyPass =  YOUR MERCHANT ID;
@@ -34,10 +34,16 @@ const LogfileMaxSize = '5242880'; //10 MB In Bytes
 const EnableMasking = true;
 
 /*
-PEM Key file path for decoding JWE Response Enter the folder path where the .pem file is located.
-It is optional property, require adding only during JWE decryption.
-*/
-const PemFileDirectory = 'Resource/NetworkTokenCert.pem';
+ * The file path to the network tokenization private key PEM file.
+ *
+ * This file is used to sign the network tokenization request when using the JWT authentication method.
+ * 
+ * The PEM file should contain the private key associated with the merchant's network tokenization certificate.
+ * 
+ * The file path should be relative to the root directory of the project or an absolute path to 
+ * the PEM file location.
+ */
+// const PemFileDirectory = 'Resource/<file_name>.pem';
 
 //Add the property if required to override the cybs default developerId in all request body
 const DefaultDeveloperId = '';
@@ -53,14 +59,14 @@ function Configuration() {
         'merchantKeyId': MerchantKeyId,
         'merchantsecretKey': MerchantSecretKey,
 
-        'keyAlias': KeyAlias,
-        'keyPass': KeyPass,
-        'keyFileName': KeyFileName,
-        'keysDirectory': KeysDirectory,
+        // 'keyAlias': KeyAlias,
+        // 'keyPass': KeyPass,
+        // 'keyFileName': KeyFileName,
+        // 'keysDirectory': KeysDirectory,
 
         'useMetaKey': UseMetaKey,
         'portfolioID': PortfolioID,
-        'pemFileDirectory': PemFileDirectory,
+        // 'pemFileDirectory': PemFileDirectory,
         'defaultDeveloperId': DefaultDeveloperId,
         'logConfiguration': {
             'enableLog': EnableLog,
